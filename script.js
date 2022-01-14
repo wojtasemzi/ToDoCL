@@ -12,16 +12,6 @@ function apiListTasks() {
             return response.json()
         })
 }
-function apiListSubtasks(taskId) {
-    return fetch(apiAddress + '/api/tasks/' + taskId + '/operations',
-                 { headers: { Authorization: apiKey }})
-        .then(function(response) {
-            if(!response.ok) {
-                alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
-            }
-            return response.json()
-        })
-}
 function apiCreateTask(title, description) {
     return fetch(apiAddress + '/api/tasks',
                  { headers: { Authorization: apiKey, 'Content-Type': 'application/json' },
@@ -38,6 +28,29 @@ function apiDeleteTask(taskID) {
     return fetch(apiAddress + '/api/tasks/' + taskID,
                  { headers: { Authorization: apiKey },
                    method: 'DELETE'})
+        .then(function(response) {
+            if(!response.ok) {
+                alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
+            }
+            return response.json()
+        })
+}
+
+function apiListSubtasks(taskId) {
+    return fetch(apiAddress + '/api/tasks/' + taskId + '/operations',
+                 { headers: { Authorization: apiKey }})
+        .then(function(response) {
+            if(!response.ok) {
+                alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
+            }
+            return response.json()
+        })
+}
+function apiCreateSubtask(taskId, description) {
+    return fetch(apiAddress + '/api/tasks/' + taskId + '/operations',
+                 { headers: { Authorization: apiKey, 'Content-Type': 'application/json' },
+                   body: JSON.stringify({description: description, timeSpent: 0}),
+                   method: 'POST'})
         .then(function(response) {
             if(!response.ok) {
                 alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
@@ -102,8 +115,8 @@ function renderTask(taskId, title, description, status) {
                 taskSection.appendChild(subtasksUl)
 
                 apiListSubtasks(taskId).then(function(response) {
-                    response.data.forEach((operation) => {
-                        renderSubtask(subtasksUl, operation.id, status, operation.description, operation.timeSpent)
+                    response.data.forEach((subtask) => {
+                        renderSubtask(subtasksUl, subtask.id, status, subtask.description, subtask.timeSpent)
                     });
                 })
             
@@ -133,6 +146,20 @@ function renderTask(taskId, title, description, status) {
                                 addSubtaskDivFormDivDivButton.className = 'btn btn-info'
                                 addSubtaskDivFormDivDivButton.innerText = 'Add'
                                 addSubtaskDivFormDivDiv.appendChild(addSubtaskDivFormDivDivButton)
+
+                        addSubtaskDivForm.addEventListener('submit', function(event) {
+                            event.preventDefault()
+
+                            let description = this.querySelector('input').value
+
+                            console.log(description)
+
+                            apiCreateSubtask(taskId, description)
+                                .then(function(newSubtask) {
+                                    renderSubtask(subtasksUl, newSubtask.id, status, description, 0)
+                                })
+            
+                        })
 }
 function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, timeSpent) {
     const subtaskLi = document.createElement('li')
@@ -181,9 +208,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let title = this.querySelector('[name=title]').value
         let description = this.querySelector('[name=description').value
         
-        apiCreateTask(title, description).then(function(newTask) {
-            renderTask(newTask.data.id, newTask.data.title,
-                       newTask.data.description, newTask.data.status)
+        apiCreateTask(title, description)
+            .then(function(newTask) {
+                renderTask(newTask.data.id, newTask.data.title,
+                           newTask.data.description, newTask.data.status)
         })
 
     })
