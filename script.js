@@ -34,6 +34,17 @@ function apiCreateTask(title, description) {
             return response.json()
         })
 }
+function apiDeleteTask(taskID) {
+    return fetch(apiAddress + '/api/tasks/' + taskID,
+                 { headers: { Authorization: apiKey },
+                   method: 'DELETE'})
+        .then(function(response) {
+            if(!response.ok) {
+                alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
+            }
+            return response.json()
+        })
+}
 
 function convertMinutesIntoHHMM(timeInMinutes) {
     let hours = Math.floor(timeInMinutes / 60)
@@ -76,6 +87,14 @@ function renderTask(taskId, title, description, status) {
                 const deleteTaskButton = document.createElement('button')
                     deleteTaskButton.className = 'btn btn-outline-danger btn-sm ml-2'
                     deleteTaskButton.innerText = 'Delete'
+
+                    deleteTaskButton.addEventListener('click', function(event) {
+                        apiDeleteTask(taskId)
+                            .then(function(response) {
+                                taskSection.parentElement.removeChild(taskSection)
+                            })
+                    })
+
                     headerRightDiv.appendChild(deleteTaskButton)
 
             const subtasksUl = document.createElement('ul')     
