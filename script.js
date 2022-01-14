@@ -22,6 +22,18 @@ function apiListSubtasks(taskId) {
             return response.json()
         })
 }
+function apiCreateTask(title, description) {
+    return fetch(apiAddress + '/api/tasks',
+                 { headers: { Authorization: apiKey, 'Content-Type': 'application/json' },
+                   body: JSON.stringify({title: title, description: description, status: 'open' }),
+                   method: 'POST'})
+        .then(function(response) {
+            if(!response.ok) {
+                alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
+            }
+            return response.json()
+        })
+}
 
 function convertMinutesIntoHHMM(timeInMinutes) {
     let hours = Math.floor(timeInMinutes / 60)
@@ -78,7 +90,7 @@ function renderTask(taskId, title, description, status) {
             
             const addSubtaskDiv = document.createElement('div')
                 addSubtaskDiv.className = 'card-body'
-                taskSection.parentElement.appendChild(addSubtaskDiv)
+                taskSection.appendChild(addSubtaskDiv)
   
                 const addSubtaskDivForm = document.createElement('form')
                     addSubtaskDiv.appendChild(addSubtaskDivForm)
@@ -142,5 +154,18 @@ document.addEventListener('DOMContentLoaded', function() {
         response.data.forEach(task => {
             renderTask(task.id, task.title, task.description, task.status)
         })
+    })
+
+    document.querySelector('.js-task-adding-form').addEventListener('submit', function(event) {
+        event.preventDefault()
+
+        let title = this.querySelector('[name=title]').value
+        let description = this.querySelector('[name=description').value
+        
+        apiCreateTask(title, description).then(function(newTask) {
+            renderTask(newTask.data.id, newTask.data.title,
+                       newTask.data.description, newTask.data.status)
+        })
+
     })
 })
