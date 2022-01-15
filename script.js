@@ -58,6 +58,18 @@ function apiCreateSubtask(taskId, description) {
             return response.json()
         })
 }
+function apiAddTimeSpent(subtaskId, description, timeSpent) {
+    return fetch(apiAddress + '/api/operations/' + subtaskId,
+                 { headers: { Authorization: apiKey, 'Content-Type': 'application/json' },
+                   body: JSON.stringify({description: description, timeSpent: timeSpent}),
+                   method: 'PUT'})
+        .then(function(response) {
+            if(!response.ok) {
+                alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
+            }
+            return response.json()
+        })
+}
 
 function convertMinutesIntoHHMM(timeInMinutes) {
     let hours = Math.floor(timeInMinutes / 60)
@@ -116,7 +128,7 @@ function renderTask(taskId, title, description, status) {
 
                 apiListSubtasks(taskId).then(function(response) {
                     response.data.forEach((subtask) => {
-                        renderSubtask(subtasksUl, subtask.id, status, subtask.description, subtask.timeSpent)
+                        renderSubtask(subtasksUl, status, subtask.id, subtask.description, subtask.timeSpent)
                     });
                 })
             
@@ -181,11 +193,25 @@ function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, time
             const plus15MinButton = document.createElement('button')
                 plus15MinButton.className = 'btn btn-outline-success btn-sm mr-2'
                 plus15MinButton.innerText = '+15m'
+
+                plus15MinButton.addEventListener('click', function(event) {
+                    apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent + 15)
+                    timeSpent += 15 
+                    subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
+                })
+
                 subtaskRightDiv.appendChild(plus15MinButton)
   
             const plus1HButton = document.createElement('button')
                 plus1HButton.className = 'btn btn-outline-success btn-sm mr-2'
                 plus1HButton.innerText = '+1h'
+
+                plus1HButton.addEventListener('click', function(event) {
+                    apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent + 60)
+                    timeSpent += 60 
+                    subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
+                })
+
                 subtaskRightDiv.appendChild(plus1HButton)
   
             const deleteSubtaskButton = document.createElement('button')
