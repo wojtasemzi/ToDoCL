@@ -58,11 +58,22 @@ function apiCreateSubtask(taskId, description) {
             return response.json()
         })
 }
-function apiAddTimeSpent(subtaskId, description, timeSpent) {
+function apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent) {
     return fetch(apiAddress + '/api/operations/' + subtaskId,
                  { headers: { Authorization: apiKey, 'Content-Type': 'application/json' },
-                   body: JSON.stringify({description: description, timeSpent: timeSpent}),
+                   body: JSON.stringify({description: subtaskDescription, timeSpent: timeSpent}),
                    method: 'PUT'})
+        .then(function(response) {
+            if(!response.ok) {
+                alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
+            }
+            return response.json()
+        })
+}
+function apiDeleteSubtask(subtaskId) {
+    return fetch(apiAddress + '/api/operations/' + subtaskId,
+                 { headers: { Authorization: apiKey },
+                   method: 'DELETE'})
         .then(function(response) {
             if(!response.ok) {
                 alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
@@ -217,6 +228,14 @@ function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, time
             const deleteSubtaskButton = document.createElement('button')
                 deleteSubtaskButton.className = 'btn btn-outline-danger btn-sm'
                 deleteSubtaskButton.innerText = 'Delete'
+
+                deleteSubtaskButton.addEventListener('click', function(event) {
+                    apiDeleteSubtask(subtaskId)
+                        .then(function(response) {
+                            subtaskLi.parentElement.removeChild(subtaskLi)
+                        })
+                })
+
                 subtaskRightDiv.appendChild(deleteSubtaskButton)
 }
 
