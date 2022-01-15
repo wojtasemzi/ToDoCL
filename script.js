@@ -180,7 +180,7 @@ function renderTask(taskId, title, description, status) {
                             addSubtaskDivFormDivInput.type = 'text'
                             addSubtaskDivFormDivInput.placeholder = 'Subtask description'
                             addSubtaskDivFormDivInput.className = 'form-control'
-                            addSubtaskDivFormDivInput.minlenght = '5'
+                            addSubtaskDivFormDivInput.setAttribute('minlength', 5)
                             addSubtaskDivFormDiv.appendChild(addSubtaskDivFormDivInput)
                         
                         const addSubtaskDivFormDivDiv = document.createElement('div')
@@ -195,13 +195,11 @@ function renderTask(taskId, title, description, status) {
                         addSubtaskDivForm.addEventListener('submit', function(event) {
                             event.preventDefault()
 
-                            let description = this.querySelector('input').value
+                            let subtaskDescription = this.querySelector('input').value == '' ? '     ' : this.querySelector('input').value
 
-                            console.log(description)
-
-                            apiCreateSubtask(taskId, description)
+                            apiCreateSubtask(taskId, subtaskDescription)
                                 .then(function(newSubtask) {
-                                    renderSubtask(subtasksUl, newSubtask.id, status, description, 0)
+                                    renderSubtask(subtasksUl, newSubtask.id, status, subtaskDescription, 0)
                                 })
             
                         })
@@ -276,8 +274,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.js-task-adding-form').addEventListener('submit', function(event) {
         event.preventDefault()
 
-        let title = this.querySelector('[name=title]').value
-        let description = this.querySelector('[name=description').value
+        let title = this.querySelector('[name=title]').value == '' ? '     ' : this.querySelector('[name=title]').value
+        let description = this.querySelector('[name=description').value == '' ? '     ' : this.querySelector('[name=description').value
         
         apiCreateTask(title, description)
             .then(function(newTask) {
