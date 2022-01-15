@@ -35,6 +35,18 @@ function apiDeleteTask(taskID) {
             return response.json()
         })
 }
+function apiUpdateTask(taskId, title, description, status) {
+    return fetch(apiAddress + '/api/tasks/' + taskId,
+                 { headers: { Authorization: apiKey, 'Content-Type': 'application/json' },
+                   body: JSON.stringify({title: title, description: description, status: status}),
+                   method: 'PUT'})
+        .then(function(response) {
+            if(!response.ok) {
+                alert('Wystąpił błąd! Otwórz devtools i zakładkę Sieć/Network, i poszukaj przyczyny');
+            }
+            return response.json()
+        })
+}
 
 function apiListSubtasks(taskId) {
     return fetch(apiAddress + '/api/tasks/' + taskId + '/operations',
@@ -115,8 +127,18 @@ function renderTask(taskId, title, description, status) {
 
                 if (status == 'open') {
                     const finishButton = document.createElement('button')
-                        finishButton.className = 'btn btn-dark btn-sm'
+                        finishButton.className = 'btn btn-dark btn-sm js-task-open-only'
                         finishButton.innerText = 'Finish'
+
+                        finishButton.addEventListener('click', function(event) {
+                            apiUpdateTask(taskId, title, description, 'close')
+                                .then(function(response) {
+                                    taskSection.querySelectorAll('.js-task-open-only').forEach(element => {
+                                        element.parentElement.removeChild(element)
+                                    });
+                                })
+                        })
+
                         headerRightDiv.appendChild(finishButton)
                 }
 
@@ -202,7 +224,7 @@ function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, time
             subtaskLi.appendChild(subtaskRightDiv)
   
             const plus15MinButton = document.createElement('button')
-                plus15MinButton.className = 'btn btn-outline-success btn-sm mr-2'
+                plus15MinButton.className = 'btn btn-outline-success btn-sm mr-2 js-task-open-only'
                 plus15MinButton.innerText = '+15m'
 
                 plus15MinButton.addEventListener('click', function(event) {
@@ -216,7 +238,7 @@ function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, time
                 subtaskRightDiv.appendChild(plus15MinButton)
   
             const plus1HButton = document.createElement('button')
-                plus1HButton.className = 'btn btn-outline-success btn-sm mr-2'
+                plus1HButton.className = 'btn btn-outline-success btn-sm mr-2 js-task-open-only'
                 plus1HButton.innerText = '+1h'
 
                 plus1HButton.addEventListener('click', function(event) {
@@ -230,7 +252,7 @@ function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, time
                 subtaskRightDiv.appendChild(plus1HButton)
   
             const deleteSubtaskButton = document.createElement('button')
-                deleteSubtaskButton.className = 'btn btn-outline-danger btn-sm'
+                deleteSubtaskButton.className = 'btn btn-outline-danger btn-sm js-task-open-only'
                 deleteSubtaskButton.innerText = 'Delete'
 
                 deleteSubtaskButton.addEventListener('click', function(event) {
