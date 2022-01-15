@@ -207,8 +207,10 @@ function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, time
 
                 plus15MinButton.addEventListener('click', function(event) {
                     apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent + 15)
-                    timeSpent += 15 
-                    subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
+                        .then(function(response) {
+                            timeSpent += 15 
+                            subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
+                        })
                 })
 
                 subtaskRightDiv.appendChild(plus15MinButton)
@@ -219,8 +221,10 @@ function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, time
 
                 plus1HButton.addEventListener('click', function(event) {
                     apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent + 60)
-                    timeSpent += 60 
-                    subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
+                        .then(function(response) {
+                            timeSpent += 60 
+                            subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
+                        })
                 })
 
                 subtaskRightDiv.appendChild(plus1HButton)
