@@ -165,44 +165,46 @@ function renderTask(taskId, title, description, status) {
                     });
                 })
             
-            const addSubtaskDiv = document.createElement('div')
-                addSubtaskDiv.className = 'card-body'
-                taskSection.appendChild(addSubtaskDiv)
-  
-                const addSubtaskDivForm = document.createElement('form')
-                    addSubtaskDiv.appendChild(addSubtaskDivForm)
-            
-                    const addSubtaskDivFormDiv = document.createElement('div')
-                        addSubtaskDivFormDiv.className = 'input-group'
-                        addSubtaskDivForm.appendChild(addSubtaskDivFormDiv)
-            
-                        const addSubtaskDivFormDivInput = document.createElement('input')
-                            addSubtaskDivFormDivInput.type = 'text'
-                            addSubtaskDivFormDivInput.placeholder = 'Subtask description'
-                            addSubtaskDivFormDivInput.className = 'form-control'
-                            addSubtaskDivFormDivInput.setAttribute('minlength', 5)
-                            addSubtaskDivFormDiv.appendChild(addSubtaskDivFormDivInput)
-                        
-                        const addSubtaskDivFormDivDiv = document.createElement('div')
-                            addSubtaskDivFormDivDiv.className = 'input-group-append'
-                            addSubtaskDivFormDiv.appendChild(addSubtaskDivFormDivDiv)
-            
-                            const addSubtaskDivFormDivDivButton = document.createElement('button')
-                                addSubtaskDivFormDivDivButton.className = 'btn btn-info'
-                                addSubtaskDivFormDivDivButton.innerText = 'Add'
-                                addSubtaskDivFormDivDiv.appendChild(addSubtaskDivFormDivDivButton)
+            if(status == 'open') {
+                const addSubtaskDiv = document.createElement('div')
+                    addSubtaskDiv.className = 'card-body'
+                    taskSection.appendChild(addSubtaskDiv)
+    
+                    const addSubtaskDivForm = document.createElement('form')
+                        addSubtaskDiv.appendChild(addSubtaskDivForm)
+                
+                        const addSubtaskDivFormDiv = document.createElement('div')
+                            addSubtaskDivFormDiv.className = 'input-group'
+                            addSubtaskDivForm.appendChild(addSubtaskDivFormDiv)
+                
+                            const addSubtaskDivFormDivInput = document.createElement('input')
+                                addSubtaskDivFormDivInput.type = 'text'
+                                addSubtaskDivFormDivInput.placeholder = 'Subtask description'
+                                addSubtaskDivFormDivInput.className = 'form-control'
+                                addSubtaskDivFormDivInput.setAttribute('minlength', 5)
+                                addSubtaskDivFormDiv.appendChild(addSubtaskDivFormDivInput)
+                            
+                            const addSubtaskDivFormDivDiv = document.createElement('div')
+                                addSubtaskDivFormDivDiv.className = 'input-group-append'
+                                addSubtaskDivFormDiv.appendChild(addSubtaskDivFormDivDiv)
+                
+                                const addSubtaskDivFormDivDivButton = document.createElement('button')
+                                    addSubtaskDivFormDivDivButton.className = 'btn btn-info'
+                                    addSubtaskDivFormDivDivButton.innerText = 'Add'
+                                    addSubtaskDivFormDivDiv.appendChild(addSubtaskDivFormDivDivButton)
 
-                        addSubtaskDivForm.addEventListener('submit', function(event) {
-                            event.preventDefault()
+                            addSubtaskDivForm.addEventListener('submit', function(event) {
+                                event.preventDefault()
 
-                            let subtaskDescription = this.querySelector('input').value == '' ? '     ' : this.querySelector('input').value
+                                let subtaskDescription = this.querySelector('input').value == '' ? '     ' : this.querySelector('input').value
 
-                            apiCreateSubtask(taskId, subtaskDescription)
-                                .then(function(newSubtask) {
-                                    renderSubtask(subtasksUl, newSubtask.id, status, subtaskDescription, 0)
-                                })
-            
-                        })
+                                apiCreateSubtask(taskId, subtaskDescription)
+                                    .then(function(newSubtask) {
+                                        renderSubtask(subtasksUl, status, newSubtask.id, subtaskDescription, 0)
+                                    })
+                
+                            })
+                }
 }
 function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, timeSpent) {
     const subtaskLi = document.createElement('li')
@@ -221,46 +223,48 @@ function renderSubtask(subtasksList, status, subtaskId, subtaskDescription, time
         const subtaskRightDiv = document.createElement('div')
             subtaskLi.appendChild(subtaskRightDiv)
   
-            const plus15MinButton = document.createElement('button')
-                plus15MinButton.className = 'btn btn-outline-success btn-sm mr-2 js-task-open-only'
-                plus15MinButton.innerText = '+15m'
+            if(status == 'open') {
+                const plus15MinButton = document.createElement('button')
+                    plus15MinButton.className = 'btn btn-outline-success btn-sm mr-2 js-task-open-only'
+                    plus15MinButton.innerText = '+15m'
 
-                plus15MinButton.addEventListener('click', function(event) {
-                    apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent + 15)
-                        .then(function(response) {
-                            timeSpent += 15 
-                            subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
-                        })
-                })
+                    plus15MinButton.addEventListener('click', function(event) {
+                        apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent + 15)
+                            .then(function(response) {
+                                timeSpent += 15 
+                                subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
+                            })
+                    })
 
-                subtaskRightDiv.appendChild(plus15MinButton)
-  
-            const plus1HButton = document.createElement('button')
-                plus1HButton.className = 'btn btn-outline-success btn-sm mr-2 js-task-open-only'
-                plus1HButton.innerText = '+1h'
+                    subtaskRightDiv.appendChild(plus15MinButton)
+    
+                const plus1HButton = document.createElement('button')
+                    plus1HButton.className = 'btn btn-outline-success btn-sm mr-2 js-task-open-only'
+                    plus1HButton.innerText = '+1h'
 
-                plus1HButton.addEventListener('click', function(event) {
-                    apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent + 60)
-                        .then(function(response) {
-                            timeSpent += 60 
-                            subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
-                        })
-                })
+                    plus1HButton.addEventListener('click', function(event) {
+                        apiAddTimeSpent(subtaskId, subtaskDescription, timeSpent + 60)
+                            .then(function(response) {
+                                timeSpent += 60 
+                                subtaskTimeSpan.innerText = convertMinutesIntoHHMM(timeSpent)
+                            })
+                    })
 
-                subtaskRightDiv.appendChild(plus1HButton)
-  
-            const deleteSubtaskButton = document.createElement('button')
-                deleteSubtaskButton.className = 'btn btn-outline-danger btn-sm js-task-open-only'
-                deleteSubtaskButton.innerText = 'Delete'
+                    subtaskRightDiv.appendChild(plus1HButton)
+              
+                const deleteSubtaskButton = document.createElement('button')
+                    deleteSubtaskButton.className = 'btn btn-outline-danger btn-sm js-task-open-only'
+                    deleteSubtaskButton.innerText = 'Delete'
 
-                deleteSubtaskButton.addEventListener('click', function(event) {
-                    apiDeleteSubtask(subtaskId)
-                        .then(function(response) {
-                            subtaskLi.parentElement.removeChild(subtaskLi)
-                        })
-                })
+                    deleteSubtaskButton.addEventListener('click', function(event) {
+                        apiDeleteSubtask(subtaskId)
+                            .then(function(response) {
+                                subtaskLi.parentElement.removeChild(subtaskLi)
+                            })
+                    })
 
-                subtaskRightDiv.appendChild(deleteSubtaskButton)
+                    subtaskRightDiv.appendChild(deleteSubtaskButton)
+            }
 }
 
 
